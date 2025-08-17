@@ -34,12 +34,14 @@
             exportToolStripMenuItem = new ToolStripMenuItem();
             toXmlToolStripMenuItem = new ToolStripMenuItem();
             richTextBox1 = new RichTextBox();
+            toolStripDropDownButton2 = new ToolStripDropDownButton();
+            oledI2cToolStripMenuItem = new ToolStripMenuItem();
             toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1 });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1, toolStripDropDownButton2 });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(800, 25);
@@ -60,22 +62,40 @@
             // 
             exportToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toXmlToolStripMenuItem });
             exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            exportToolStripMenuItem.Size = new Size(180, 22);
+            exportToolStripMenuItem.Size = new Size(108, 22);
             exportToolStripMenuItem.Text = "export";
             // 
             // toXmlToolStripMenuItem
             // 
             toXmlToolStripMenuItem.Name = "toXmlToolStripMenuItem";
-            toXmlToolStripMenuItem.Size = new Size(180, 22);
+            toXmlToolStripMenuItem.Size = new Size(108, 22);
             toXmlToolStripMenuItem.Text = "to xml";
             // 
             // richTextBox1
             // 
-            richTextBox1.Location = new Point(0, 28);
+            richTextBox1.Dock = DockStyle.Fill;
+            richTextBox1.Location = new Point(0, 25);
             richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(676, 315);
+            richTextBox1.Size = new Size(800, 425);
             richTextBox1.TabIndex = 1;
             richTextBox1.Text = "";
+            // 
+            // toolStripDropDownButton2
+            // 
+            toolStripDropDownButton2.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripDropDownButton2.DropDownItems.AddRange(new ToolStripItem[] { oledI2cToolStripMenuItem });
+            toolStripDropDownButton2.Image = (Image)resources.GetObject("toolStripDropDownButton2.Image");
+            toolStripDropDownButton2.ImageTransparentColor = Color.Magenta;
+            toolStripDropDownButton2.Name = "toolStripDropDownButton2";
+            toolStripDropDownButton2.Size = new Size(65, 22);
+            toolStripDropDownButton2.Text = "simulate";
+            // 
+            // oledI2cToolStripMenuItem
+            // 
+            oledI2cToolStripMenuItem.Name = "oledI2cToolStripMenuItem";
+            oledI2cToolStripMenuItem.Size = new Size(180, 22);
+            oledI2cToolStripMenuItem.Text = "oled i2c";
+            oledI2cToolStripMenuItem.Click += oledI2cToolStripMenuItem_Click;
             // 
             // PacketViewer
             // 
@@ -99,5 +119,7 @@
         private ToolStripMenuItem exportToolStripMenuItem;
         private ToolStripMenuItem toXmlToolStripMenuItem;
         private RichTextBox richTextBox1;
+        private ToolStripDropDownButton toolStripDropDownButton2;
+        private ToolStripMenuItem oledI2cToolStripMenuItem;
     }
 }

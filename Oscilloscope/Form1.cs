@@ -55,25 +55,30 @@ namespace Oscilloscope
              double minY2 = -25;*/
             ///  var diap = maxY - minY;
             //  var diap2 = maxY2 - minY2;
-            var maxX = diapX + minX;
+            var maxX = Math.Min(diapX + minX, channels[0].Values.Count - 1);
+            var realDiapX = maxX - minX;
             var xx = 0;
             int incr = 1;
 
-            if (diapX > 100000)
-                incr += 2;
+            var realStep = realDiapX / (float)(pictureBox1.Width*3);
+            incr = (int)realStep;
+            
+            if (incr < 1) 
+                incr = 1;            
 
-            Pen[] pens = new Pen[]
-            {
+            Pen[] pens =
+            [
                 new Pen(Color.Blue),
                 new Pen(Color.Red)
-            };
+            ];
+
             for (int i1 = 0; i1 < channels.Count; i1++)
             {
                 Channel? channel = channels[i1];
                 for (int i = minX + 1; i < maxX; i += incr, xx++)
                 {
-                    var realX = (float)((i - 1 - minX) / (double)diapX) * pictureBox1.Width;
-                    var realX2 = (float)((i - minX) / (double)diapX) * pictureBox1.Width;
+                    var realX = (float)((i - 1 - minX) / (double)realDiapX) * pictureBox1.Width;
+                    var realX2 = (float)((i - minX) / (double)realDiapX) * pictureBox1.Width;
 
                     gr.DrawLine(pens[i1], realX, pictureBox1.Height - (float)(pictureBox1.Height * ((channel.Values[i - 1] - channel.minY) / channel.diap)), realX2 + 1,
                       pictureBox1.Height - (float)(((channel.Values[i] - channel.minY) / channel.diap) * pictureBox1.Height));
@@ -83,7 +88,7 @@ namespace Oscilloscope
                 }
                 foreach (var marker in channel.Markers)
                 {
-                    var realX = (float)((marker.Position - minX) / (double)diapX) * pictureBox1.Width;
+                    var realX = (float)((marker.Position - minX) / (double)realDiapX) * pictureBox1.Width;
                     gr.DrawLine(Pens.Green, realX, 0, realX, pictureBox1.Height);
 
                 }
