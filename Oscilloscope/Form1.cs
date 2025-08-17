@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Threading.Channels;
 
 namespace Oscilloscope
 {
@@ -194,10 +195,24 @@ namespace Oscilloscope
 
         private void i2CToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            List<byte[]> bits = new List<byte[]>();
+            var d = AutoDialog.DialogHelpers.StartDialog();
+
+            d.AddOptionsField("clock", "Clock", channels.Select(z=>z.Name).ToArray(), channels[0].Name);
+            d.AddOptionsField("data", "Data", channels.Select(z=>z.Name).ToArray(), channels[1].Name);
+            
+
+            if (!d.ShowDialog())
+                return;
 
             var clock = channels[0];
             var data = channels[1];
+
+            clock = channels[d.GetOptionsFieldIdx("clock")];
+            data = channels[d.GetOptionsFieldIdx("data")];            
+
+            List<byte[]> bits = new List<byte[]>();
+
+          
 
             clock.Markers.Clear();
             data.Markers.Clear();
