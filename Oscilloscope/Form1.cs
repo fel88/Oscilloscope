@@ -10,6 +10,18 @@ namespace Oscilloscope
             pictureBox1.Paint += PictureBox1_Paint;
             MouseWheel += Form1_MouseWheel;
             pictureBox1.MouseClick += PictureBox1_MouseClick;
+            pictureBox1.MouseDoubleClick += PictureBox1_MouseDoubleClick;
+
+        }
+
+        private void PictureBox1_MouseDoubleClick(object? sender, MouseEventArgs e)
+        {
+            var pos = pictureBox1.PointToClient(Cursor.Position);
+            var maxX = Math.Min(diapX + minX, channels[0].Values.Count - 1);
+            var realDiapX = maxX - minX;
+            var currenXX = (pos.X / (double)pictureBox1.Width) * realDiapX + minX;
+
+            minX = (int)currenXX;
         }
 
         public List<int> globalMarkers = new List<int>();
@@ -41,9 +53,11 @@ namespace Oscilloscope
         int diapX = 111500;
         int minX = 0;
 
+        bool SkipSteps = true;
         private void PictureBox1_Paint(object? sender, PaintEventArgs e)
         {
             var gr = e.Graphics;
+            gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             gr.Clear(Color.White);
 
             if (channels.Count == 0)
@@ -59,12 +73,14 @@ namespace Oscilloscope
             var realDiapX = maxX - minX;
             var xx = 0;
             int incr = 1;
+            if (SkipSteps)
+            {
+                var realStep = realDiapX / (float)(pictureBox1.Width * 3);
+                incr = (int)realStep;
 
-            var realStep = realDiapX / (float)(pictureBox1.Width * 3);
-            incr = (int)realStep;
-
-            if (incr < 1)
-                incr = 1;
+                if (incr < 1)
+                    incr = 1;
+            }
 
             Pen[] pens =
             [
@@ -85,8 +101,24 @@ namespace Oscilloscope
                     var realX = (float)((i - 1 - minX) / (double)realDiapX) * pictureBox1.Width;
                     var realX2 = (float)((i - minX) / (double)realDiapX) * pictureBox1.Width;
 
-                    gr.DrawLine(pens[i1], realX, pictureBox1.Height - (float)(pictureBox1.Height * ((channel.Values[i - 1] - channel.minY) / channel.diap)), realX2 + 1,
-                      pictureBox1.Height - (float)(((channel.Values[i] - channel.minY) / channel.diap) * pictureBox1.Height));
+                    var v1 = channel.Values[i - 1] + channel.OffsetY;
+
+                    var v2 = channel.Values[i] + channel.OffsetY;
+                    double accum = 0;
+                    int cntr = 0;
+                    for (int j = 0; j < incr; j++)
+                    {
+                        if ((i + j) > channel.Values.Count - 1)
+                            continue;
+
+                        var v3 = channel.Values[i + j] + channel.OffsetY;
+                        accum += v3;
+                        cntr++;
+                    }
+                    v2 = accum / cntr;
+
+                    gr.DrawLine(pens[i1], realX, pictureBox1.Height - (float)(pictureBox1.Height * ((v1 - channel.minY) / channel.diap)), realX2 + 1,
+                      pictureBox1.Height - (float)(((v2 - channel.minY) / channel.diap) * pictureBox1.Height));
 
                     //   gr.DrawLine(new Pen(Color.Red), realX, pictureBox1.Height - (float)(pictureBox1.Height * ((values2[i - 1] - minY2) / diap2)), realX2 + 1,
                     //   pictureBox1.Height - (float)(((values2[i] - minY2) / diap2) * pictureBox1.Height));
@@ -112,32 +144,7 @@ namespace Oscilloscope
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            if (ofd.ShowDialog() != DialogResult.OK)
-                return;
 
-            using var file = File.OpenRead(ofd.FileName);
-            using var reader = new StreamReader(file);
-            reader.ReadLine();
-            reader.ReadLine();
-            channels.Add(new Channel());
-            channels.Add(new Channel());
-            while (!reader.EndOfStream)
-            {
-                var line = reader.ReadLine();
-                var spl = line.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                var val = float.Parse(spl[1]);
-                var val2 = float.Parse(spl[2]);
-                channels[0].Values.Add(val);
-                channels[1].Values.Add(val2);
-            }
-
-            channels[1].maxY = 25;
-            channels[1].minY = -25;
-
-            /* var min = values.Min();
-             var max = values.Max();
-             minX = values.IndexOf(min) - diapX / 2;*/
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -172,7 +179,6 @@ namespace Oscilloscope
         }
 
         List<Channel> channels = new List<Channel>();
-    
 
 
         public byte ToByte(IReadOnlyList<byte> bits)
@@ -258,6 +264,7 @@ namespace Oscilloscope
 
             return ret.ToArray();
         }
+        private static readonly char[] separator = new char[] { ',' };
 
         private void toolStripButton6_Click(object sender, EventArgs e)
         {
@@ -278,6 +285,7 @@ namespace Oscilloscope
                 d.AddBoolField("visible" + i, "Visible #" + i, item.Visible);
                 d.AddNumericField("maxY" + i, "MaxY #" + i, item.maxY, 1000, -1000);
                 d.AddNumericField("minY" + i, "MinY #" + i, item.minY, 1000, -1000);
+                d.AddNumericField("offsetY" + i, "OffsetY #" + i, item.OffsetY, 1000, -1000);
             }
 
             if (!d.ShowDialog())
@@ -290,7 +298,100 @@ namespace Oscilloscope
                 item.Visible = d.GetBoolField("visible" + i);
                 item.maxY = d.GetNumericField("maxY" + i);
                 item.minY = d.GetNumericField("minY" + i);
+                item.OffsetY = d.GetNumericField("offsetY" + i);
             }
+        }
+
+        bool IntegralFilterEnabled = false;
+        double IntegralFilterKoef = 0.9;
+
+        private void rigolFormatsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            if (ofd.ShowDialog() != DialogResult.OK)
+                return;
+
+            if (ofd.FileName.ToLower().EndsWith(".wfm"))
+            {
+
+
+            }
+            else if (ofd.FileName.ToLower().EndsWith(".csv"))
+            {
+                var d = AutoDialog.DialogHelpers.StartDialog();
+
+                d.AddBoolField("IntegralFilterEnabled", "IntegralFilterEnabled", IntegralFilterEnabled);
+                d.AddNumericField("IntegralFilterKoef", "IntegralFilterKoef", IntegralFilterKoef);                
+
+                if (!d.ShowDialog())
+                    return;
+
+                IntegralFilterEnabled = d.GetBoolField("IntegralFilterEnabled");
+                IntegralFilterKoef = d.GetNumericField("IntegralFilterKoef");
+
+                channels.Clear();                
+                using var file = File.OpenRead(ofd.FileName);
+                using var reader = new StreamReader(file);
+                var line1 = reader.ReadLine();
+                var spl0 = line1.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                var chNames = spl0.Where(z => z.StartsWith("CH")).ToArray();
+                var line2 = reader.ReadLine();
+                for (int i = 0; i < chNames.Length; i++)
+                {
+                    channels.Add(new Channel() { Name = chNames[i], OffsetY = 10 * i });
+                }
+
+                double[] integralVals = new double[channels.Count];
+                bool first = true;
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var spl = line.Split([','], StringSplitOptions.RemoveEmptyEntries);
+                    if (first && IntegralFilterEnabled)
+                    {
+                        first = false;
+
+                        for (int i = 0; i < chNames.Length; i++)
+                        {
+                            var val = float.Parse(spl[1 + i]);
+                            integralVals[i] = val;
+
+                        }
+                    }
+
+
+                    for (int i = 0; i < chNames.Length; i++)
+                    {
+
+                        var val = float.Parse(spl[1 + i]);
+                        if (IntegralFilterEnabled)
+                        {
+                            integralVals[i] = IntegralFilterKoef * integralVals[i] + (1.0 - IntegralFilterKoef) * val;
+                            channels[i].Values.Add(integralVals[i]);
+                        }
+                        else
+                        {
+
+                            channels[i].Values.Add(val);
+                        }
+                    }
+                }
+            }
+        }
+
+        
+        private void toolStripButton8_Click(object sender, EventArgs e)
+        {
+            var d = AutoDialog.DialogHelpers.StartDialog();
+
+            d.AddBoolField("IntegralFilterEnabled", "IntegralFilterEnabled", IntegralFilterEnabled);
+            d.AddNumericField("IntegralFilterKoef", "IntegralFilterKoef", IntegralFilterKoef);
+
+            if (!d.ShowDialog())
+                return;
+
+            IntegralFilterEnabled = d.GetBoolField("IntegralFilterEnabled");
+            IntegralFilterKoef = d.GetNumericField("IntegralFilterKoef");
         }
     }
 }

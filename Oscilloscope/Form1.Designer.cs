@@ -31,7 +31,8 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             toolStrip1 = new ToolStrip();
-            toolStripButton1 = new ToolStripButton();
+            toolStripButton1 = new ToolStripDropDownButton();
+            rigolFormatsToolStripMenuItem = new ToolStripMenuItem();
             toolStripButton3 = new ToolStripButton();
             toolStripButton2 = new ToolStripButton();
             toolStripButton4 = new ToolStripButton();
@@ -39,16 +40,17 @@
             i2CToolStripMenuItem = new ToolStripMenuItem();
             toolStripButton5 = new ToolStripButton();
             toolStripButton6 = new ToolStripButton();
+            toolStripButton7 = new ToolStripButton();
             pictureBox1 = new PictureBox();
             timer1 = new System.Windows.Forms.Timer(components);
-            toolStripButton7 = new ToolStripButton();
+            toolStripButton8 = new ToolStripButton();
             toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripButton1, toolStripButton3, toolStripButton2, toolStripButton4, toolStripDropDownButton1, toolStripButton5, toolStripButton6, toolStripButton7 });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripButton1, toolStripButton3, toolStripButton2, toolStripButton4, toolStripDropDownButton1, toolStripButton5, toolStripButton6, toolStripButton7, toolStripButton8 });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(1131, 25);
@@ -58,12 +60,20 @@
             // toolStripButton1
             // 
             toolStripButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButton1.DropDownItems.AddRange(new ToolStripItem[] { rigolFormatsToolStripMenuItem });
             toolStripButton1.Image = Properties.Resources.folder_open;
             toolStripButton1.ImageTransparentColor = Color.Magenta;
             toolStripButton1.Name = "toolStripButton1";
-            toolStripButton1.Size = new Size(23, 22);
+            toolStripButton1.Size = new Size(29, 22);
             toolStripButton1.Text = "toolStripButton1";
             toolStripButton1.Click += toolStripButton1_Click;
+            // 
+            // rigolFormatsToolStripMenuItem
+            // 
+            rigolFormatsToolStripMenuItem.Name = "rigolFormatsToolStripMenuItem";
+            rigolFormatsToolStripMenuItem.Size = new Size(180, 22);
+            rigolFormatsToolStripMenuItem.Text = "Rigol formats";
+            rigolFormatsToolStripMenuItem.Click += rigolFormatsToolStripMenuItem_Click;
             // 
             // toolStripButton3
             // 
@@ -108,7 +118,7 @@
             // i2CToolStripMenuItem
             // 
             i2CToolStripMenuItem.Name = "i2CToolStripMenuItem";
-            i2CToolStripMenuItem.Size = new Size(180, 22);
+            i2CToolStripMenuItem.Size = new Size(91, 22);
             i2CToolStripMenuItem.Text = "I2C";
             i2CToolStripMenuItem.Click += i2CToolStripMenuItem_Click;
             // 
@@ -132,6 +142,16 @@
             toolStripButton6.Text = "clear markers";
             toolStripButton6.Click += toolStripButton6_Click;
             // 
+            // toolStripButton7
+            // 
+            toolStripButton7.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripButton7.Image = (Image)resources.GetObject("toolStripButton7.Image");
+            toolStripButton7.ImageTransparentColor = Color.Magenta;
+            toolStripButton7.Name = "toolStripButton7";
+            toolStripButton7.Size = new Size(58, 22);
+            toolStripButton7.Text = "channels";
+            toolStripButton7.Click += toolStripButton7_Click;
+            // 
             // pictureBox1
             // 
             pictureBox1.Dock = DockStyle.Fill;
@@ -146,15 +166,14 @@
             timer1.Enabled = true;
             timer1.Tick += timer1_Tick;
             // 
-            // toolStripButton7
+            // toolStripButton8
             // 
-            toolStripButton7.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            toolStripButton7.Image = (Image)resources.GetObject("toolStripButton7.Image");
-            toolStripButton7.ImageTransparentColor = Color.Magenta;
-            toolStripButton7.Name = "toolStripButton7";
-            toolStripButton7.Size = new Size(58, 22);
-            toolStripButton7.Text = "channels";
-            toolStripButton7.Click += toolStripButton7_Click;
+            toolStripButton8.Image = Properties.Resources.gear;
+            toolStripButton8.ImageTransparentColor = Color.Magenta;
+            toolStripButton8.Name = "toolStripButton8";
+            toolStripButton8.Size = new Size(68, 22);
+            toolStripButton8.Text = "settings";
+            toolStripButton8.Click += toolStripButton8_Click;
             // 
             // Form1
             // 
@@ -177,7 +196,6 @@
         #endregion
 
         private ToolStrip toolStrip1;
-        private ToolStripButton toolStripButton1;
         private PictureBox pictureBox1;
         private System.Windows.Forms.Timer timer1;
         private ToolStripButton toolStripButton2;
@@ -188,5 +206,8 @@
         private ToolStripButton toolStripButton5;
         private ToolStripButton toolStripButton6;
         private ToolStripButton toolStripButton7;
+        private ToolStripDropDownButton toolStripButton1;
+        private ToolStripMenuItem rigolFormatsToolStripMenuItem;
+        private ToolStripButton toolStripButton8;
     }
 }

@@ -6,12 +6,13 @@ namespace Oscilloscope
     {
         public string Name { get; set; }
         public bool Visible { get; set; } = true;
+        public double OffsetY { get; set; } 
         public List<ChannelMarker> Markers = new List<ChannelMarker>();
         public void AddMarker(int pos)
         {
             Markers.Add(new ChannelMarker() { Position = pos, Parent = this });
         }
-        public List<float> Values = new List<float>();
+        public List<double> Values = new List<double>();
         public void ExtractEdgesMarkers()
         {
             bool edgeWait = true;
