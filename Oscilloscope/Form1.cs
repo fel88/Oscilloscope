@@ -60,21 +60,26 @@ namespace Oscilloscope
             var xx = 0;
             int incr = 1;
 
-            var realStep = realDiapX / (float)(pictureBox1.Width*3);
+            var realStep = realDiapX / (float)(pictureBox1.Width * 3);
             incr = (int)realStep;
-            
-            if (incr < 1) 
-                incr = 1;            
+
+            if (incr < 1)
+                incr = 1;
 
             Pen[] pens =
             [
                 new Pen(Color.Blue),
-                new Pen(Color.Red)
+                new Pen(Color.Red),
+                new Pen(Color.Green),
+                new Pen(Color.Orange),
             ];
 
             for (int i1 = 0; i1 < channels.Count; i1++)
             {
                 Channel? channel = channels[i1];
+                if (!channel.Visible)
+                    continue;
+
                 for (int i = minX + 1; i < maxX; i += incr, xx++)
                 {
                     var realX = (float)((i - 1 - minX) / (double)realDiapX) * pictureBox1.Width;
@@ -167,39 +172,8 @@ namespace Oscilloscope
         }
 
         List<Channel> channels = new List<Channel>();
-        public class ChannelMarker
-        {
-            public int Position;
-            public Channel Parent;
-        }
-        public class Channel
-        {
-            public string Name { get; set; }
-            public List<ChannelMarker> Markers = new List<ChannelMarker>();
-            public void AddMarker(int pos)
-            {
-                Markers.Add(new ChannelMarker() { Position = pos, Parent = this });
-            }
-            public List<float> Values = new List<float>();
-            public void ExtractEdgesMarkers()
-            {
-                bool edgeWait = true;
-                for (int i = 1; i < Values.Count; i++)
-                {
-                    if (Values[i - 1] < 1.8 && Values[i] > 1.8 && edgeWait)
-                    {
-                        edgeWait = false;
-                        AddMarker(i);
-                    }
-                    if (Values[i] < 0.5)
-                        edgeWait = true;
-                }
-            }
-            public double maxY = 15;
-            public double minY = -5;
+    
 
-            public double diap => maxY - minY;
-        }
 
         public byte ToByte(IReadOnlyList<byte> bits)
         {
@@ -290,6 +264,32 @@ namespace Oscilloscope
             foreach (var item in channels)
             {
                 item.Markers.Clear();
+            }
+        }
+
+        private void toolStripButton7_Click(object sender, EventArgs e)
+        {
+            var d = AutoDialog.DialogHelpers.StartDialog();
+
+            for (int i = 0; i < channels.Count; i++)
+            {
+                Channel? item = channels[i];
+                d.AddStringField("chName" + i, "Name #" + i, item.Name);
+                d.AddBoolField("visible" + i, "Visible #" + i, item.Visible);
+                d.AddNumericField("maxY" + i, "MaxY #" + i, item.maxY, 1000, -1000);
+                d.AddNumericField("minY" + i, "MinY #" + i, item.minY, 1000, -1000);
+            }
+
+            if (!d.ShowDialog())
+                return;
+
+            for (int i = 0; i < channels.Count; i++)
+            {
+                Channel? item = channels[i];
+                item.Name = d.GetStringField("chName" + i);
+                item.Visible = d.GetBoolField("visible" + i);
+                item.maxY = d.GetNumericField("maxY" + i);
+                item.minY = d.GetNumericField("minY" + i);
             }
         }
     }

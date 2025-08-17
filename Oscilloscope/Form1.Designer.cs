@@ -38,16 +38,17 @@
             toolStripDropDownButton1 = new ToolStripDropDownButton();
             i2CToolStripMenuItem = new ToolStripMenuItem();
             toolStripButton5 = new ToolStripButton();
+            toolStripButton6 = new ToolStripButton();
             pictureBox1 = new PictureBox();
             timer1 = new System.Windows.Forms.Timer(components);
-            toolStripButton6 = new ToolStripButton();
+            toolStripButton7 = new ToolStripButton();
             toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripButton1, toolStripButton3, toolStripButton2, toolStripButton4, toolStripDropDownButton1, toolStripButton5, toolStripButton6 });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripButton1, toolStripButton3, toolStripButton2, toolStripButton4, toolStripDropDownButton1, toolStripButton5, toolStripButton6, toolStripButton7 });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(1131, 25);
@@ -121,6 +122,16 @@
             toolStripButton5.Text = "auto markers";
             toolStripButton5.Click += toolStripButton5_Click;
             // 
+            // toolStripButton6
+            // 
+            toolStripButton6.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripButton6.Image = (Image)resources.GetObject("toolStripButton6.Image");
+            toolStripButton6.ImageTransparentColor = Color.Magenta;
+            toolStripButton6.Name = "toolStripButton6";
+            toolStripButton6.Size = new Size(81, 22);
+            toolStripButton6.Text = "clear markers";
+            toolStripButton6.Click += toolStripButton6_Click;
+            // 
             // pictureBox1
             // 
             pictureBox1.Dock = DockStyle.Fill;
@@ -135,15 +146,15 @@
             timer1.Enabled = true;
             timer1.Tick += timer1_Tick;
             // 
-            // toolStripButton6
+            // toolStripButton7
             // 
-            toolStripButton6.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            toolStripButton6.Image = (Image)resources.GetObject("toolStripButton6.Image");
-            toolStripButton6.ImageTransparentColor = Color.Magenta;
-            toolStripButton6.Name = "toolStripButton6";
-            toolStripButton6.Size = new Size(81, 22);
-            toolStripButton6.Text = "clear markers";
-            toolStripButton6.Click += toolStripButton6_Click;
+            toolStripButton7.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripButton7.Image = (Image)resources.GetObject("toolStripButton7.Image");
+            toolStripButton7.ImageTransparentColor = Color.Magenta;
+            toolStripButton7.Name = "toolStripButton7";
+            toolStripButton7.Size = new Size(58, 22);
+            toolStripButton7.Text = "channels";
+            toolStripButton7.Click += toolStripButton7_Click;
             // 
             // Form1
             // 
@@ -176,5 +187,6 @@
         private ToolStripMenuItem i2CToolStripMenuItem;
         private ToolStripButton toolStripButton5;
         private ToolStripButton toolStripButton6;
+        private ToolStripButton toolStripButton7;
     }
 }
